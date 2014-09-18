@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     importio.init({
         "auth": {
             "userGuid": "5767c7c2-3c74-4ad2-b9d8-cf80b854967e",
@@ -8,23 +8,30 @@ $(function() {
     });
 
     // Data and done callbacks
-    var dataCallback = function(data) {
+    var dataCallback = function (data) {
         console.log("Data received", data);
         for (var i = 0; i < data.length; i++) {
-            var d = data[i];
-            for (var k in d.data) {
-                document.write("<i>" + k + "</i>: " + d.data[k] + "<br />");
-            }
-            document.write("<hr>");
+            //var d = data[i];
+            var b = {};
+
+            _.each(data[i].data, function(value, key) {
+                key = key.replace('/','');
+                b[key] = value;
+            });
+            wrieteFirebase(b);
+            //for (var k in d.data) {
+            //    document.write("<i>" + k + "</i>: " + d.data[k] + "<br />");
+            //}
+            //document.write("<hr>");
         }
     };
-    var doneCallback = function(data) {
+    var doneCallback = function (data) {
         console.log("Done, all data:", data);
         document.write("<b>Done</b><hr>");
     };
 
 // 3. Do the query (when the function is called)
-    var doQuery = function() {
+    var doQuery = function () {
         // Query for tile sVENSKAFANSrEADER
         importio.query({
             "connectorGuids": [
@@ -33,20 +40,21 @@ $(function() {
             "input": {
                 "webpage/url": "http://www.svenskafans.com/fotboll/mff/forum.aspx?tnl336Click=fotboll&tnl336Tab=FrmPop"
             }
-        }, { "data": dataCallback, "done": doneCallback });
+        }, {"data": dataCallback, "done": doneCallback});
     };
-    //doQuery();
+    doQuery();
 
-    var wrieteFirebase = function() {
+    var wrieteFirebase = function (data) {
         var myFirebaseRef = new Firebase("svenskafansreader.firebaseio.com");
-        myFirebaseRef.push("I'm writing data", function(error) {
+        myFirebaseRef.push(data, function (error) {
             if (error) {
-                alert("Data could not be saved." + error);
+                console.log("Data could not be saved." + error);
             } else {
-                alert("Data saved successfully.");
+                console.log("Data saved successfully.");
             }
         });
     };
-    wrieteFirebase();
+
+    //wrieteFirebase();
 });
 
