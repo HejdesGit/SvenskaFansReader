@@ -10,18 +10,21 @@ gulp.task('styles', function () {
     return gulp.src('app/styles/main.scss')
         .pipe($.rubySass({
             style: 'expanded',
-            precision: 10
+            precision: 10,
+            loadPath: ['app/bower_components/foundation/scss/']
         }))
         .pipe($.autoprefixer('last 1 version'))
         .pipe(gulp.dest('.tmp/styles'))
-        .pipe($.size());
+        .pipe($.size())
+        .pipe($.notify("Styles compiled"));
 });
 
 gulp.task('scripts', function () {
     return gulp.src('app/scripts/**/*.js')
         .pipe($.jshint())
         .pipe($.jshint.reporter(require('jshint-stylish')))
-        .pipe($.size());
+        .pipe($.size())
+        .pipe($.notify("Scripts compiled"));
 });
 
 gulp.task('html', ['styles', 'scripts'], function () {
@@ -62,12 +65,12 @@ gulp.task('fonts', function () {
 });
 
 gulp.task('extras', function () {
-    return gulp.src(['app/*.*', '!app/*.html'], { dot: true })
+    return gulp.src(['app/*.*', '!app/*.html'], {dot: true})
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('clean', function () {
-    return gulp.src(['.tmp', 'dist'], { read: false }).pipe($.clean());
+    return gulp.src(['.tmp', 'dist'], {read: false}).pipe($.clean());
 });
 
 gulp.task('build', ['html', 'images', 'fonts', 'extras']);
@@ -79,7 +82,7 @@ gulp.task('default', ['clean'], function () {
 gulp.task('connect', function () {
     var connect = require('connect');
     var app = connect()
-        .use(require('connect-livereload')({ port: 35729 }))
+        .use(require('connect-livereload')({port: 35729}))
         .use(connect.static('app'))
         .use(connect.static('.tmp'))
         .use(connect.directory('app'));
@@ -107,8 +110,7 @@ gulp.task('wiredep', function () {
 
     gulp.src('app/*.html')
         .pipe(wiredep({
-            directory: 'app/bower_components',
-            exclude: ['bootstrap-sass-official']
+            directory: 'app/bower_components'
         }))
         .pipe(gulp.dest('app'));
 });
